@@ -1,21 +1,29 @@
-version: '3'
-
 services:
   nginx:
     build: requirements/nginx
     container_name: nginx
     ports:
-      - 80:80
+      - 80:80 #should it be 430?
+    #env_file: 
+      #- .env
     environment:
-      #.env
       - NGINX_HOST=aklimchu.42.fr
       - NGINX_PORT=80
+    volumes:
+      - web-data:/var/www/html
+    restart: always
   wordpress:
     build: requirements/wordpress
     container_name: wordpress
+    volumes:
+      - web-data:/var/www/html
+    restart: always
+        #env_file: 
+      #- .env
     #environment:
       #.env
 #network:
   #mynetwork
 
-#volumes
+volumes:
+  web-data: {}
