@@ -20,8 +20,25 @@ services:
     restart: always
         #env_file: 
       #- .env
+  mariadb:
+    build: requirements/mariadb
+    container_name: mariadb
+    #volumes:
+    #  - web-data:/var/www/html
+    restart: always
+        #env_file: 
+      #- .env
     #environment:
-      #.env
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+    volumes:
+      - web-data:/var/lib/mysql
+
 #network:
   #mynetwork
 
