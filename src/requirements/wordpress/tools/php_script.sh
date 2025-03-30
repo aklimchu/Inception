@@ -1,24 +1,37 @@
 #!/bin/bash
 
-# Wait for MariaDB to be ready
-until mysql -h mariadb -u root -prootpassword -e "SELECT 1"; do
-    echo "Waiting for database to be ready..."
+echo "PHP version:"
+php82 --version
+echo "WP-CLI version:"
+php82 /usr/local/bin/wp --info
+
+cd /var/www/html
+
+echo "Cleaning up /var/www/html..."
+rm -rf /var/www/html/* || { echo "Failed to clean /var/www/html"; exit 1; }
+
+echo "Waiting for MariaDB to be ready..."
+until mysqladmin ping -h mariadb -u root -prootpass --silent; do
+    echo "Still waiting for MariaDB..."
     sleep 3
 done
+echo "MariaDB is ready!"
 
-# Download WordPress
-wp core download --path=/var/www/html
+# Debug: Test MySQL connection
+echo "Testing MySQL connection..."
+mysql -h mariadb -u root -prootpass -e "SHOW DATABASES;" || { echo "MySQL connection failed"; exit 1; }
 
-# Configure WordPress wp-config.php
-wp config create --path=/var/www/html --dbname=wordpress --dbuser=wp_user --dbpass=password --dbhost=mariadb --allow-root
+# WordPress setup with increased memory limit
+php82 -d memory_limit=256M /usr/local/bin/wp core download --allow-root || { echo "Failed to download WordPress"; exit 1; }
+php82 -d memory_limit=256M /usr/local/bin/wp config create --dbname=wordpress --dbuser=root --dbpass=rootpass --dbhost=mariadb --allow-root || { echo "Failed to create wp-config.php"; exit 1; }
+php82 -d memory_limit=256M /usr/local/bin/wp core install --url=localhost --title="Inception" \
+    --admin_user=supervisor --admin_password=superpass --admin_email=supervisor@example.com --allow-root || { echo "Failed to install WordPress"; exit 1; }
 
-# Install WordPress
-wp core install --path=/var/www/html --url=localhost --title="Inception" \
-    --admin_user=supervisor --admin_password=password --admin_email=supervisor@example.com --allow-root
+# Add a second user (wp_user)
+php82 -d memory_limit=256M /usr/local/bin/wp user create wp_user wpuser@example.com --role=editor --user_pass=wpuserpass --path=/var/www/html --allow-root || { echo "Failed to create second user"; exit 1; }
 
-# Set appropriate permissions for the WordPress files
-chown -R www-data:www-data /var/www/html
-chmod -R 755 /var/www/html
+# Verify users
+echo "Listing WordPress users..."
+php82 -d memory_limit=256M /usr/local/bin/wp user list --path=/var/www/html --allow-root
 
-# Start PHP-FPM
 php-fpm82 -F
