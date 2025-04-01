@@ -1,19 +1,19 @@
-# This is a default site configuration which will simply return 404, preventing
-# chance access to any other virtualhost.
-
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+	listen 443 ssl;
+    server_name aklimchu.42.fr;
 
-	server_name _;
-	# server_name aklimchu.42.fr 127.0.0.1;
+    ssl_certificate /etc/nginx/certs/aklimchu.42.fr.crt;
+    ssl_certificate_key /etc/nginx/certs/aklimchu.42.fr.key;
 
+    # Enforce TLSv1.2 and TLSv1.3 only
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
 
     root /var/www/html;
     index index.php index.html;
 
     location / {
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ /index.php?$args;
     }
 
     location ~ \.php$ {

@@ -1,17 +1,21 @@
 FROM alpine:3.20.2
 
-RUN apk update && apk upgrade && apk add nginx && apk add openssl && \
-    openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt \
-    -sha256 -days 365 -nodes -subj \
-    "/C=FI/L=HEL/O=Hive/OU=Student/CN=aklimchu.42.fr/"
-    
-# will this erase any previous data?
-RUN mkdir -p /var/www/html
+RUN apk update && apk upgrade && apk add --no-cache nginx openssl
 
-RUN chown -R nginx:nginx /var/www/html
+# Create directories for certificates and web root
+RUN mkdir -p /etc/nginx/certs /var/www/html
 
-RUN chmod -R 755 /var/www/html
+# Set ownership and permissions
+RUN chown -R nginx:nginx /var/www/html && chmod -R 755 /var/www/html
 
+# Copy configuration (assuming conf is a file named default.conf)
 COPY conf /etc/nginx/http.d/default.conf
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copy and make script executable
+COPY tools/nginx_script.sh /nginx_script.sh
+RUN chmod +x /nginx_script.sh
+
+# Expose port 443 only
+EXPOSE 443
+
+CMD ["/bin/sh", "/nginx_script.sh"]
