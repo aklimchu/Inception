@@ -4,7 +4,7 @@
 
 # this is read by the standalone daemon and embedded servers
 [server]
-init_file = /etc/my.cnf.d/init.sql
+#init_file = /etc/my.cnf.d/init.sql
 
 # this is only for the mysqld standalone daemon
 [mysqld]
@@ -26,7 +26,7 @@ tmpdir=/tmp
 #
 # Allow server to accept connections on all interfaces.
 #
-#bind-address=mariadb # Allow connections from Docker network
+#bind-address=0.0.0.0
 #
 # Optional setting
 #wsrep_slave_threads=1

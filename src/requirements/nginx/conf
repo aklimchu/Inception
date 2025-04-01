@@ -6,19 +6,21 @@ server {
 	listen [::]:80 default_server;
 
 	server_name _;
+	# server_name aklimchu.42.fr 127.0.0.1;
+
 
     root /var/www/html;
     index index.php index.html;
 
     location / {
-        try_files $uri $uri/ /index.php?$args;
+        try_files $uri $uri/ =404;
     }
 
     location ~ \.php$ {
-        include fastcgi_params;
         fastcgi_pass wordpress:9000;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
     }
 
     error_log /var/log/nginx/error.log;
