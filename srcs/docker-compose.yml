@@ -6,10 +6,8 @@ services:
       - "443:443"
     volumes:
       - wordpress_data:/var/www/html
-    #env_file: 
-      #- .env
-    environment:
-      - NGINX_HOST=aklimchu.42.fr
+    env_file: 
+      - .env
     restart: always
     depends_on:
       - wordpress
@@ -21,14 +19,9 @@ services:
     container_name: wordpress
     volumes:
       - wordpress_data:/var/www/html
-    environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: password1234
-      WORDPRESS_DB_NAME: wordpress
+    env_file: 
+      - .env
     restart: always
-        #env_file: 
-      #- .env
     depends_on:
       - mariadb
     networks:
@@ -39,6 +32,8 @@ services:
     container_name: mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
+    env_file: 
+     - .env
     restart: always
     networks:
       - default
