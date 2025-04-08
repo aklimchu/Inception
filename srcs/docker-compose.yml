@@ -37,6 +37,7 @@ services:
     restart: always
     networks:
       - default
+    #command: mysqld --skip-grant-tables --user=root --datadir=/var/lib/mysql --socket=/run/mysqld/mysqld.sock --pid-file=/run/mysqld/mysqld.pid --console
 
 networks:
   default: {}

@@ -4,7 +4,9 @@ CREATE DATABASE IF NOT EXISTS wordpress;
 
 DROP USER IF EXISTS 'root'@'localhost';
 DROP USER IF EXISTS 'root'@'%';
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'password1234';
 CREATE USER 'root'@'%' IDENTIFIED BY 'password1234';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON wordpress.* TO 'root'@'%' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
